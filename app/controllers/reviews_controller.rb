@@ -1,4 +1,5 @@
 class ReviewsController < ApplicationController
+  before_action :ensure_logged_in, only: [:create, :destroy] #limits access to reviews functionality unless user is logged in.
   before_action :load_product
 
   def show
