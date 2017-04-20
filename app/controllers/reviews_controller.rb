@@ -1,0 +1,43 @@
+class ReviewsController < ApplicationController
+  before_action :load_product
+
+  def show
+    @review = Review.find(params[:id])
+  end
+
+  def create
+    @review = @product.reviews.build(review_params)
+    @review.user = current_user
+
+#Copied from assignment! --->
+  # Check out this article on [.build](http://stackoverflow.com/questions/783584/ruby-on-rails-how-do-i-use-the-active-record-build-method-in-a-belongs-to-rel)
+# You could use a longer alternate syntax if it makes more sense to you
+#
+# @review = Review.new(
+#   comment: params[:review][:comment],
+#   product_id: @product.id,
+#   user_id: current_user.id
+# )
+    if @review.save
+      redirect_to products_url, notice: 'Review created successfully!'
+    else
+      render 'products/show'
+    end
+  end
+
+  def destroy
+    @review = Review.find(params[:id])
+    @review.destroy
+  end
+
+  private
+  def review_params
+    params.require(:review).permit(:comment, :product_id)
+  end
+  #Remember to store the params in a private method!
+
+  def load_product
+    @product = Product.find(params[:product_id])
+  end
+  #Also store an order to load the product here, so it can associate the review to it.
+end
